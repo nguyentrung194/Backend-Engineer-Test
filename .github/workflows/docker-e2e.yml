@@ -12,5 +12,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Create Docker network
+        run: docker network create api-net || true
       - name: Run e2e tests
         run: docker compose -f docker-compose.ci.yaml --env-file env-example -p ci up --build --exit-code-from api-backend
