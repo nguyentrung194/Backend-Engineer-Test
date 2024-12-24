@@ -1,0 +1,40 @@
+networks:
+  api-net:
+    name: api-net
+    external: true
+
+services:
+  db-postgres:
+    container_name: db_postgres
+    image: postgres:16.0-alpine
+    ports:
+      - ${DATABASE_PORT}:5432
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    networks:
+      - api-net
+
+  api-redis:
+    container_name: my_app_redis
+    image: redis:7-alpine
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/redis:/var/lib/redis
+    ports:
+      - ${REDIS_PORT}:6379
+    networks:
+      - api-net
+
+  api-backend:
+    container_name: my_app_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    networks:
+      - api-net
+
