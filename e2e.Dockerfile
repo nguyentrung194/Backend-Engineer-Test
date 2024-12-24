@@ -8,6 +8,7 @@ RUN npm install
 
 COPY . .
 
+COPY ./wait-for-it.sh /opt/wait-for-it.sh
 RUN chmod +x wait-for-it.sh
 RUN chmod +x startup.ci.sh
 RUN sed -i 's/\r//g' wait-for-it.sh

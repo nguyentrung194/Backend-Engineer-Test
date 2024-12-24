@@ -29,7 +29,7 @@ services:
       - api-net
 
   api-backend:
-    container_name: my_app_backend
+    container_name: api_backend
     build:
       context: .
       dockerfile: Dockerfile
