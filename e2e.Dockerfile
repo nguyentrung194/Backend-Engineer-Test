@@ -19,4 +19,5 @@ WORKDIR /app
 RUN if [ ! -f .env ]; then cp env-example .env; fi
 RUN npm run build
 
+RUN apk add --no-cache bash
 CMD ["startup.ci.sh"]
