@@ -11,19 +11,16 @@ import { Role } from '../../roles/entities/role.entity';
 import { Status } from '../../statuses/entities/status.entity';
 import bcrypt from 'bcryptjs';
 import { CustomBaseEntity } from 'src/utils/entity-helper';
-import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
 
 @Entity()
 export class User extends CustomBaseEntity {
   // For "string | null" we need to use String type.
-  // More info: https://github.com/typeorm/typeorm/issues/2567
   @Column({ type: String, unique: true, nullable: true })
   @Expose({ groups: ['me', 'admin'] })
   email: string | null;
 
   // For "string | null" we need to use String type.
-  // More info: https://github.com/typeorm/typeorm/issues/2567
   @Column({ type: String, unique: true, nullable: true })
   @Expose({ groups: ['me', 'admin'] })
   username: string | null;
@@ -49,15 +46,6 @@ export class User extends CustomBaseEntity {
     }
   }
 
-  @Column({ default: AuthProvidersEnum.user })
-  @Expose({ groups: ['me', 'admin'] })
-  provider: string;
-
-  @Index()
-  @Column({ type: String, nullable: true })
-  @Expose({ groups: ['me', 'admin'] })
-  socialId: string | null;
-
   @Index()
   @Column({ type: String, nullable: true })
   firstName: string | null;
@@ -75,9 +63,4 @@ export class User extends CustomBaseEntity {
     eager: true,
   })
   status?: Status;
-
-  @Column({ type: String, nullable: true })
-  @Index()
-  @Exclude({ toPlainOnly: true })
-  hash: string | null;
 }

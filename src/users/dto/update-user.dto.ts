@@ -40,10 +40,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @MinLength(6)
   password?: string;
 
-  provider?: string;
-
-  socialId?: string | null;
-
   @ApiProperty({ example: 'John' })
   @IsOptional()
   firstName?: string | null;
@@ -65,6 +61,4 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     message: 'statusNotExists',
   })
   status?: Status;
-
-  hash?: string | null;
 }

@@ -10,13 +10,10 @@ import { User } from '../users/entities/user.entity';
 import bcrypt from 'bcryptjs';
 import { AuthUserLoginDto } from './dto/auth-user-login.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { StatusEnum } from 'src/statuses/statuses.enum';
-import crypto from 'crypto';
 import { Status } from 'src/statuses/entities/status.entity';
 import { Role } from 'src/roles/entities/role.entity';
-import { AuthProvidersEnum } from './auth-providers.enum';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
 import { NullableType } from '../utils/types/nullable.type';
@@ -45,18 +42,6 @@ export class AuthService {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
             email: 'notFound',
-          },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-
-    if (user.provider !== AuthProvidersEnum.user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            user: `needLoginViaProvider:${user.provider}`,
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -96,21 +81,16 @@ export class AuthService {
     };
   }
 
-  async validateLoginByUsername(
+  async validateLoginByEmail(
     loginDto: AuthUserLoginDto,
   ): Promise<LoginResponseType> {
     const user = await this.usersService.findOne({
-      username: loginDto.username,
+      email: loginDto.email,
     });
     return this.validateLoginUser(user, loginDto.password);
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
     await this.usersService.create({
       ...dto,
       email: dto.email,
@@ -121,7 +101,6 @@ export class AuthService {
       status: {
         id: StatusEnum.inactive,
       } as Status,
-      hash,
     });
   }
 

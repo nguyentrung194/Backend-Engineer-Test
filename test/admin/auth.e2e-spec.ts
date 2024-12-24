@@ -6,11 +6,11 @@ describe('Auth admin (e2e)', () => {
 
   it('Login: /api/v1/auth/email/login (POST)', () => {
     return request(app)
-      .post('/api/v1/auth/email/login')
+      .post('/api/v1/auth/user/login')
       .send({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD })
       .expect(200)
-      .expect(({ body }) => {
-        expect(body.token).toBeDefined();
+      .then(({ body }) => {
+        expect(body.accessToken).toBeDefined();
         expect(body.user.email).toBeDefined();
         expect(body.user.role).toBeDefined();
       });

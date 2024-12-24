@@ -36,10 +36,6 @@ export class CreateUserDto {
   @MinLength(6)
   password?: string;
 
-  provider?: string;
-
-  socialId?: string | null;
-
   @ApiProperty({ example: 'John' })
   @IsNotEmpty()
   firstName: string | null;
@@ -59,6 +55,4 @@ export class CreateUserDto {
     message: 'statusNotExists',
   })
   status?: Status;
-
-  hash?: string | null;
 }
