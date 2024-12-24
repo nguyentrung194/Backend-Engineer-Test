@@ -22,12 +22,7 @@ import { LoggerModule } from './logger/logger.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [
-        databaseConfig,
-        authConfig,
-        appConfig,
-        redisConfig,
-      ],
+      load: [databaseConfig, authConfig, appConfig, redisConfig],
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
@@ -67,4 +62,4 @@ import { LoggerModule } from './logger/logger.module';
   ],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

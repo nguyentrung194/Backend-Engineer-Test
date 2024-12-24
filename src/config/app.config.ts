@@ -4,7 +4,6 @@ import validateConfig from 'src/utils/validate-config';
 import {
   IsEnum,
   IsInt,
-  IsNotEmpty,
   IsOptional,
   IsString,
   IsUrl,

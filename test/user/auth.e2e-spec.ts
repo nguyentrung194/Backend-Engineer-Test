@@ -15,9 +15,9 @@ describe('Auth user (e2e)', () => {
   const newUserEmail = `User.${Date.now()}@example.com`;
   const newUserPassword = `secret`;
 
-  it('Login: /api/v1/auth/email/login (POST)', () => {
+  it('Login: /api/v1/auth/user/login (POST)', () => {
     return request(app)
-      .post('/api/v1/auth/email/login')
+      .post('/api/v1/auth/user/login')
       .send({ email: TESTER_EMAIL, password: TESTER_PASSWORD })
       .expect(200)
       .expect(({ body }) => {

@@ -4,7 +4,6 @@ import { Role } from '../../roles/entities/role.entity';
 import {
   IsEmail,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MinLength,
   Validate,
