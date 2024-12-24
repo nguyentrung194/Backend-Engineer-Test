@@ -8,8 +8,8 @@ RUN npm install
 
 COPY . .
 
-COPY ./wait-for-it.sh /opt/wait-for-it.sh
 RUN chmod +x wait-for-it.sh
+COPY ./wait-for-it.sh /opt/wait-for-it.sh
 RUN chmod +x startup.ci.sh
 RUN sed -i 's/\r//g' wait-for-it.sh
 RUN sed -i 's/\r//g' startup.ci.sh
@@ -20,4 +20,4 @@ RUN if [ ! -f .env ]; then cp env-example .env; fi
 RUN npm run build
 
 RUN apk add --no-cache bash
-CMD ["startup.ci.sh"]
+CMD ["/bin/bash", "startup.ci.sh"]
