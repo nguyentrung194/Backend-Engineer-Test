@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 /opt/wait-for-it.sh db_postgres:5432
