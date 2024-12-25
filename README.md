@@ -20,11 +20,11 @@
 
 ### Admin API
 
-- [ ] Admin api (requiring token) to list.
-  - [ ] Short Code.
-  - [ ] Full Url.
-  - [ ] Expiry (if any).
-  - [ ] Number of hits.
+- [x] Admin api (requiring token) to list.
+  - [x] Short Code.
+  - [x] Full Url.
+  - [x] Expiry (if any).
+  - [x] Number of hits.
 - [ ] Above list can filter by Short Code and keyword on origin url.
 - [x] Admin api to delete a URL (after deletion shortened URLs must return HTTP 410 on visit).
 
