@@ -19,6 +19,7 @@ import { LoggerModule } from './logger/logger.module';
 import { UrlsModule } from './url/urls.module';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
+import { BlacklistsModule } from './blacklists/blacklists.module';
 // import space
 
 @Module({
@@ -84,6 +85,7 @@ import * as redisStore from 'cache-manager-redis-store';
     UsersModule,
     AuthModule,
     SessionModule,
+    BlacklistsModule,
     HomeModule,
     LoggerModule,
     UrlsModule,

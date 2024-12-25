@@ -15,7 +15,7 @@
 - [x] Handle visits to Shortened URLs, they must redirect to the original URL with a HTTP 302 redirect, 404 if not found.
 - [x] Visiting expired URLs must return HTTP 410.
 - [x] Input URL should be validated and respond with error if not a valid URL.
-- [ ] Regex based blacklist for URLs, urls that match the blacklist respond with an error.
+- [x] Regex based blacklist for URLs, urls that match the blacklist respond with an error.
 - [x] Hit counter for shortened URLs (increment with every hit).
 
 ### Admin API

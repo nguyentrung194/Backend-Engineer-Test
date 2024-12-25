@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/config/config.type';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { BlacklistsService } from 'src/blacklists/blacklists.service';
 
 @Injectable()
 export class UrlsService {
@@ -20,6 +21,7 @@ export class UrlsService {
     private urlsRepository: Repository<Url>,
     private configService: ConfigService<AllConfigType>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private blacklistsService: BlacklistsService,
   ) {}
 
   // Add method to generate short URL code
@@ -41,6 +43,19 @@ export class UrlsService {
     originalUrl: string;
     expiresAt: Date;
   }> {
+    const blacklists = await this.blacklistsService.getAllRegexPatterns();
+    if (
+      blacklists.some((pattern) => {
+        // Convert wildcard pattern to regex pattern
+        const regexPattern = pattern
+          .replace(/\./g, '\\.') // Escape dots
+          .replace(/\*/g, '.*'); // Convert * to .*
+        return new RegExp(`^${regexPattern}$`).test(createUrlDto.originalUrl);
+      })
+    ) {
+      throw new BadRequestException('URL is blacklisted');
+    }
+
     let shortCode = this.generateShortCode();
 
     // Check if shortCode already exists
