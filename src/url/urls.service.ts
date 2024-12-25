@@ -7,10 +7,7 @@ import { CreateUrlDto } from './dto/create-url.dto';
 import { Url } from './entities/url.entity';
 import { NullableType } from '../utils/types/nullable.type';
 import { PaginationResultType } from '../utils/types/pagination-result.type';
-import {
-  parseToQueryPagination,
-  responseWithPagination,
-} from '../utils/pagination';
+import { responseWithPagination } from '../utils/pagination';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/config/config.type';
 
@@ -78,14 +75,29 @@ export class UrlsService {
   }
 
   async findManyWithPagination(
+    { shortCode, keyword }: { shortCode?: string; keyword?: string },
     paginationOptions: IPaginationOptions,
   ): Promise<PaginationResultType<Url>> {
-    return responseWithPagination(
-      await this.urlsRepository.findAndCount(
-        parseToQueryPagination(paginationOptions),
-      ),
-      paginationOptions,
-    );
+    const queryBuilder = this.urlsRepository.createQueryBuilder('url');
+
+    if (shortCode) {
+      queryBuilder.andWhere('url.shortCode ILIKE :shortCode', {
+        shortCode: `%${shortCode}%`,
+      });
+    }
+
+    if (keyword) {
+      queryBuilder.andWhere('url.originalUrl ILIKE :keyword', {
+        keyword: `%${keyword}%`,
+      });
+    }
+
+    const [items, total] = await queryBuilder
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit)
+      .getManyAndCount();
+
+    return responseWithPagination([items, total], paginationOptions);
   }
 
   findOne(fields: EntityCondition<Url>): Promise<NullableType<Url>> {

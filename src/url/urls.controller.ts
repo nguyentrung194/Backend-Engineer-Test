@@ -53,12 +53,23 @@ export class UrlsController {
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('shortCode') shortCode?: string,
+    @Query('keyword') keyword?: string,
   ): Promise<PaginationResultType<Url>> {
     if (limit > 50) {
       limit = 50;
     }
 
-    return this.urlsService.findManyWithPagination({ page, limit });
+    return this.urlsService.findManyWithPagination(
+      {
+        shortCode,
+        keyword,
+      },
+      {
+        page,
+        limit,
+      },
+    );
   }
 
   @SerializeOptions({
