@@ -68,7 +68,13 @@ export class UrlsService {
 
   // Add method to find URL by short code
   async findByShortCode(shortCode: string): Promise<NullableType<Url>> {
-    return this.findOne({ shortCode });
+    // include soft deleted urls
+    return this.urlsRepository.findOne({
+      where: {
+        shortCode,
+      },
+      withDeleted: true, // This will include soft-deleted records
+    });
   }
 
   async findManyWithPagination(

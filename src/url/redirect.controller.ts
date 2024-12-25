@@ -33,7 +33,13 @@ export class RedirectController {
       throw new NotFoundException('URL not found');
     }
 
-    if (url.expiresAt && url.expiresAt < new Date()) {
+    if (
+      (url.expiresAt && url.expiresAt < new Date()) ||
+      // admin can update the url to be inactive
+      !url.isActive ||
+      // if the url is soft deleted
+      (url.deletedAt && url.deletedAt < new Date())
+    ) {
       throw new GoneException('URL has expired');
     }
     // update hit counter
