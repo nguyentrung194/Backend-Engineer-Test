@@ -1,5 +1,6 @@
 import {
   ClassSerializerInterceptor,
+  RequestMethod,
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
@@ -26,7 +27,7 @@ async function bootstrap() {
   app.setGlobalPrefix(
     configService.getOrThrow('app.apiPrefix', { infer: true }),
     {
-      exclude: ['/'],
+      exclude: ['/', { path: 'r/:shortUrl', method: RequestMethod.GET }],
     },
   );
   app.enableVersioning({

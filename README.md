@@ -10,13 +10,13 @@
 
 ### Url Shortening
 
-- [ ] An API Client can send a url and be returned a shortened URL.
-- [ ] An API Client can specify an expiration time for URLs when creating shortened URL.
-- [ ] Handle visits to Shortened URLs, they must redirect to the original URL with a HTTP 302 redirect, 404 if not found.
-- [ ] Visiting expired URLs must return HTTP 410.
-- [ ] Input URL should be validated and respond with error if not a valid URL.
+- [x] An API Client can send a url and be returned a shortened URL.
+- [x] An API Client can specify an expiration time for URLs when creating shortened URL.
+- [x] Handle visits to Shortened URLs, they must redirect to the original URL with a HTTP 302 redirect, 404 if not found.
+- [x] Visiting expired URLs must return HTTP 410.
+- [x] Input URL should be validated and respond with error if not a valid URL.
 - [ ] Regex based blacklist for URLs, urls that match the blacklist respond with an error.
-- [ ] Hit counter for shortened URLs (increment with every hit).
+- [x] Hit counter for shortened URLs (increment with every hit).
 
 ### Admin API
 

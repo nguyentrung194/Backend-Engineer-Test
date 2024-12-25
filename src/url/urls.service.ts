@@ -11,12 +11,15 @@ import {
   parseToQueryPagination,
   responseWithPagination,
 } from '../utils/pagination';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from 'src/config/config.type';
 
 @Injectable()
 export class UrlsService {
   constructor(
     @InjectRepository(Url)
     private urlsRepository: Repository<Url>,
+    private configService: ConfigService<AllConfigType>,
   ) {}
 
   // Add method to generate short URL code
@@ -33,7 +36,11 @@ export class UrlsService {
   }
 
   // Modify create method to handle URL shortening
-  async create(createUrlDto: CreateUrlDto): Promise<Url> {
+  async create(createUrlDto: CreateUrlDto): Promise<{
+    shortUrl: string;
+    originalUrl: string;
+    expiresAt: Date;
+  }> {
     let shortCode = this.generateShortCode();
 
     // Check if shortCode already exists
@@ -43,12 +50,20 @@ export class UrlsService {
       existing = await this.findOne({ shortCode });
     }
 
-    return this.urlsRepository.save(
+    const data = await this.urlsRepository.save(
       this.urlsRepository.create({
         ...createUrlDto,
         shortCode,
       }),
     );
+
+    const url = this.configService.get('app.backendDomain', { infer: true });
+
+    return {
+      shortUrl: `${url}/r/${data.shortCode}`,
+      originalUrl: data.originalUrl,
+      expiresAt: data.expiresAt,
+    };
   }
 
   // Add method to find URL by short code
@@ -84,5 +99,9 @@ export class UrlsService {
 
   async softDelete(id: Url['id']): Promise<void> {
     await this.urlsRepository.softDelete(id);
+  }
+
+  async updateHitCounter(id: number): Promise<void> {
+    await this.urlsRepository.increment({ id }, 'hits', 1);
   }
 }
