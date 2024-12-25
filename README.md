@@ -29,5 +29,5 @@
 - [x] Admin api to delete a URL (after deletion shortened URLs must return HTTP 410 on visit).
 
 ### Bonus
-- [ ] Add a caching layer to avoid repeated database calls on popular URLs.
+- [x] Add a caching layer to avoid repeated database calls on popular URLs.
 - [x] Add auto-generated OpenAPI documentation.

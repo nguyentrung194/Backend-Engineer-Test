@@ -13,6 +13,7 @@ import {
   HttpStatus,
   HttpCode,
   SerializeOptions,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UrlsService } from './urls.service';
 import { CreateUrlDto } from './dto/create-url.dto';
@@ -25,9 +26,10 @@ import { RolesGuard } from 'src/roles/roles.guard';
 import { Url } from './entities/url.entity';
 import { NullableType } from '../utils/types/nullable.type';
 import { PaginationResultType } from '../utils/types/pagination-result.type';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin, RoleEnum.user)
+@Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Urls')
 @Controller({
@@ -38,7 +40,7 @@ export class UrlsController {
   constructor(private readonly urlsService: UrlsService) {}
 
   @SerializeOptions({
-    groups: ['admin', 'user'],
+    groups: ['admin'],
   })
   @Post()
   create(@Body() createUrlDto: CreateUrlDto) {
@@ -50,6 +52,8 @@ export class UrlsController {
   })
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(20) // 20 seconds
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,

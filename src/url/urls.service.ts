@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
@@ -10,6 +10,8 @@ import { PaginationResultType } from '../utils/types/pagination-result.type';
 import { responseWithPagination } from '../utils/pagination';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/config/config.type';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UrlsService {
@@ -17,6 +19,7 @@ export class UrlsService {
     @InjectRepository(Url)
     private urlsRepository: Repository<Url>,
     private configService: ConfigService<AllConfigType>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   // Add method to generate short URL code
@@ -66,12 +69,25 @@ export class UrlsService {
   // Add method to find URL by short code
   async findByShortCode(shortCode: string): Promise<NullableType<Url>> {
     // include soft deleted urls
-    return this.urlsRepository.findOne({
+    const cachedUrl = await this.cacheManager.get(`url:${shortCode}`);
+    if (cachedUrl) {
+      console.log('cachedUrl', cachedUrl);
+      try {
+        return JSON.parse(cachedUrl.toString()) as Url;
+      } catch (error) {
+        console.error('Error parsing cached URL:', error);
+      }
+    }
+
+    const data = await this.urlsRepository.findOne({
       where: {
         shortCode,
       },
       withDeleted: true, // This will include soft-deleted records
     });
+
+    await this.cacheManager.set(`url:${shortCode}`, JSON.stringify(data));
+    return data;
   }
 
   async findManyWithPagination(
@@ -107,6 +123,8 @@ export class UrlsService {
   }
 
   update(id: Url['id'], payload: DeepPartial<Url>): Promise<Url> {
+    // clear cache
+    void this.cacheManager.del(`url:${id}`);
     return this.urlsRepository.save(
       this.urlsRepository.create({
         id,
@@ -116,6 +134,8 @@ export class UrlsService {
   }
 
   async softDelete(id: Url['id']): Promise<void> {
+    // clear cache
+    void this.cacheManager.del(`url:${id}`);
     await this.urlsRepository.softDelete(id);
   }
 

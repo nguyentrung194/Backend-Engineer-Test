@@ -33,14 +33,5 @@ export default registerAs<RedisConfig>('redis', () => {
     redisUser: process.env.REDIS_USER,
     redisPass: process.env.REDIS_PASS,
     redisDB: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 0,
-
-    // AI winlose
-    redisHostAI: process.env.REDIS_HOST,
-    redisPortAI: process.env.REDIS_PORT
-      ? parseInt(process.env.REDIS_PORT, 10)
-      : 6379,
-    redisUserAI: process.env.REDIS_USER,
-    redisPassAI: process.env.REDIS_PASS,
-    redisDBAI: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 1,
   };
 });

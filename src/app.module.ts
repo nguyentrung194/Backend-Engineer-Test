@@ -17,6 +17,8 @@ import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { LoggerModule } from './logger/logger.module';
 import { UrlsModule } from './url/urls.module';
+import { CacheModule, CacheStore } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
 // import space
 
 @Module({
@@ -53,6 +55,30 @@ import { UrlsModule } from './url/urls.module';
         },
       ],
       imports: [ConfigModule],
+      inject: [ConfigService],
+    }),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      isGlobal: true,
+      useFactory: async (configService: ConfigService) => {
+        const store = await redisStore.redisStore({
+          socket: {
+            host: configService.get('redis.redisHost', { infer: true }),
+            port: configService.get('redis.redisPort', { infer: true }),
+          },
+          database: 0,
+          username: configService.get('redis.redisUser', { infer: true }),
+          password: configService.get('redis.redisPass', { infer: true }),
+          // In cache-manager@^5 this value is in milliseconds
+          ttl: 5 * 60 * 1000, // 5 minutes (milliseconds)
+        });
+
+        return {
+          store: store as unknown as CacheStore,
+          host: configService.get('redis.redisHost', { infer: true }),
+          port: configService.get('redis.redisPort', { infer: true }),
+        };
+      },
       inject: [ConfigService],
     }),
     UsersModule,
