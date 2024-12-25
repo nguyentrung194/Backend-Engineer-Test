@@ -16,6 +16,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { LoggerModule } from './logger/logger.module';
+import { UrlsModule } from './url/urls.module';
 // import space
 
 @Module({
@@ -59,6 +60,7 @@ import { LoggerModule } from './logger/logger.module';
     SessionModule,
     HomeModule,
     LoggerModule,
+    UrlsModule,
   ],
   providers: [],
 })
