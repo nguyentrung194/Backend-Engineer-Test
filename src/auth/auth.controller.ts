@@ -32,7 +32,7 @@ export class AuthController {
   @SerializeOptions({
     groups: ['me'],
   })
-  @Post('user/login')
+  @Post('login')
   @HttpCode(HttpStatus.OK)
   public loginUserByUsername(
     @Body() loginDto: AuthUserLoginDto,
@@ -40,7 +40,7 @@ export class AuthController {
     return this.service.validateLoginByEmail(loginDto);
   }
 
-  @Post('user/register')
+  @Post('register')
   @HttpCode(HttpStatus.NO_CONTENT)
   async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
     return this.service.register(createUserDto);
