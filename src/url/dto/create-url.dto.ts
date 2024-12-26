@@ -6,5 +6,5 @@ export class CreateUrlDto {
   originalUrl: string;
 
   @IsOptional()
-  expiresAt: Date;
+  expiresAt?: Date;
 }
