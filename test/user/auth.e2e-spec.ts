@@ -7,9 +7,9 @@ describe('Auth user (e2e)', () => {
   const newUserPassword = `secret`;
 
   // create new user
-  it('Create new user: /api/v1/auth/user/register (POST)', async () => {
+  it('Create new user: /api/v1/auth/register (POST)', async () => {
     return request(app)
-      .post('/api/v1/auth/user/register')
+      .post('/api/v1/auth/register')
       .send({
         email: newUserEmail,
         password: newUserPassword,
@@ -19,9 +19,9 @@ describe('Auth user (e2e)', () => {
       });
   });
 
-  it('Login: /api/v1/auth/user/login (POST)', () => {
+  it('Login: /api/v1/auth/login (POST)', () => {
     return request(app)
-      .post('/api/v1/auth/user/login')
+      .post('/api/v1/auth/login')
       .send({ email: TESTER_EMAIL, password: TESTER_PASSWORD })
       .expect(200)
       .then(({ body }) => {
@@ -34,9 +34,9 @@ describe('Auth user (e2e)', () => {
       });
   });
 
-  it('Do not allow register user with exists email: /api/v1/auth/user/register (POST)', () => {
+  it('Do not allow register user with exists email: /api/v1/auth/register (POST)', () => {
     return request(app)
-      .post('/api/v1/auth/user/register')
+      .post('/api/v1/auth/register')
       .send({
         email: TESTER_EMAIL,
         password: TESTER_PASSWORD,
@@ -51,7 +51,7 @@ describe('Auth user (e2e)', () => {
 
   it('Confirmed user retrieve profile: /api/v1/auth/me (GET)', async () => {
     const newUserApiToken = await request(app)
-      .post('/api/v1/auth/user/login')
+      .post('/api/v1/auth/login')
       .send({ email: TESTER_EMAIL, password: TESTER_PASSWORD })
       .then(({ body }) => body.accessToken);
 
@@ -71,7 +71,7 @@ describe('Auth user (e2e)', () => {
 
   it('Refresh token: /api/v1/auth/refresh (GET)', async () => {
     const newUserRefreshToken = await request(app)
-      .post('/api/v1/auth/user/login')
+      .post('/api/v1/auth/login')
       .send({ email: newUserEmail, password: newUserPassword })
       .then(({ body }) => {
         return body.refreshToken;
@@ -94,7 +94,7 @@ describe('Auth user (e2e)', () => {
     const newUserNewName = Date.now();
     const newUserNewPassword = 'new-secret';
     const newUserApiToken = await request(app)
-      .post('/api/v1/auth/user/login')
+      .post('/api/v1/auth/login')
       .send({ email: newUserEmail, password: newUserPassword })
       .then(({ body }) => body.accessToken);
 
@@ -122,7 +122,7 @@ describe('Auth user (e2e)', () => {
       .expect(200);
 
     await request(app)
-      .post('/api/v1/auth/user/login')
+      .post('/api/v1/auth/login')
       .send({ email: newUserEmail, password: newUserNewPassword })
       .expect(200)
       .then(({ body }) => {

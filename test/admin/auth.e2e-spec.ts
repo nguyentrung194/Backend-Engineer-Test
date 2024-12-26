@@ -6,7 +6,7 @@ describe('Auth admin (e2e)', () => {
 
   it('Login: /api/v1/auth/email/login (POST)', () => {
     return request(app)
-      .post('/api/v1/auth/user/login')
+      .post('/api/v1/auth/login')
       .send({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD })
       .expect(200)
       .then(({ body }) => {
