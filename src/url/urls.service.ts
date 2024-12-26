@@ -39,6 +39,7 @@ export class UrlsService {
 
   // Modify create method to handle URL shortening
   async create(createUrlDto: CreateUrlDto): Promise<{
+    id: number;
     shortUrl: string;
     originalUrl: string;
     expiresAt: Date;
@@ -75,6 +76,7 @@ export class UrlsService {
     const url = this.configService.get('app.backendDomain', { infer: true });
 
     return {
+      id: data.id,
       shortUrl: `${url}/r/${data.shortCode}`,
       originalUrl: data.originalUrl,
       expiresAt: data.expiresAt,
@@ -86,7 +88,6 @@ export class UrlsService {
     // include soft deleted urls
     const cachedUrl = await this.cacheManager.get(`url:${shortCode}`);
     if (cachedUrl) {
-      console.log('cachedUrl', cachedUrl);
       try {
         return JSON.parse(cachedUrl.toString()) as Url;
       } catch (error) {
@@ -102,6 +103,9 @@ export class UrlsService {
     });
 
     await this.cacheManager.set(`url:${shortCode}`, JSON.stringify(data));
+    if (data) {
+      await this.cacheManager.set(`url:${data.id}`, shortCode);
+    }
     return data;
   }
 
@@ -137,9 +141,9 @@ export class UrlsService {
     });
   }
 
-  update(id: Url['id'], payload: DeepPartial<Url>): Promise<Url> {
+  async update(id: Url['id'], payload: DeepPartial<Url>): Promise<Url> {
     // clear cache
-    void this.cacheManager.del(`url:${id}`);
+    await this.clearCache(id);
     return this.urlsRepository.save(
       this.urlsRepository.create({
         id,
@@ -150,11 +154,26 @@ export class UrlsService {
 
   async softDelete(id: Url['id']): Promise<void> {
     // clear cache
-    void this.cacheManager.del(`url:${id}`);
+    await this.clearCache(id);
     await this.urlsRepository.softDelete(id);
   }
 
   async updateHitCounter(id: number): Promise<void> {
     await this.urlsRepository.increment({ id }, 'hits', 1);
+  }
+
+  private async clearCache(id: number): Promise<void> {
+    try {
+      const cachedShortCode = await this.cacheManager.get(`url:${id}`);
+      if (cachedShortCode) {
+        void this.cacheManager.del(`url:${id}`);
+      }
+      const cachedUrl = await this.cacheManager.get(`url:${cachedShortCode}`);
+      if (cachedUrl) {
+        void this.cacheManager.del(`url:${cachedShortCode}`);
+      }
+    } catch (error) {
+      console.error('Error clearing cache:', error);
+    }
   }
 }
