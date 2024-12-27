@@ -57,14 +57,20 @@ export class UrlsService {
       throw new BadRequestException('URL is blacklisted');
     }
 
-    let shortCode = this.generateShortCode();
+    let shortCode: string;
+    let existing: NullableType<Url>;
+    let attempts = 0;
+    const maxAttempts = 5;
 
     // Check if shortCode already exists
-    let existing = await this.findOne({ shortCode });
-    while (existing) {
-      shortCode = this.generateShortCode();
+    do {
+      if (attempts >= maxAttempts) {
+        throw new Error('Failed to generate unique short code');
+      }
+      shortCode = this.generateShortCode(6 + attempts); // Increase length on conflicts
       existing = await this.findOne({ shortCode });
-    }
+      attempts++;
+    } while (existing);
 
     const data = await this.urlsRepository.save(
       this.urlsRepository.create({
