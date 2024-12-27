@@ -8,6 +8,7 @@ echo:
 
 build_base:
 	docker build -f Dockerfile.base -t $(IMAGE):base .
+	docker network create api-net
 
 build:
 	docker build -f Dockerfile -t $(IMAGE):$(VERSION) .

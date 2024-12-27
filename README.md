@@ -62,7 +62,9 @@ For protected endpoints (Admin API), you'll need to:
 git clone https://github.com/nguyentrung194/Backend-Engineer-Test.git
 cd Backend-Engineer-Test
 cp env-example .env
-docker compose up -d
+make build_base
+make build
+make install
 ```
 
 ## Module and Seed Generation
