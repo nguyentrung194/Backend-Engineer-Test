@@ -25,26 +25,26 @@ export class RedirectController {
     return this.urlsService.create(createUrlDto);
   }
 
-  @Get(':shortUrl')
+  @Get(':shortCode')
   @Redirect()
-  async redirect(@Param('shortUrl') shortUrl: string) {
-    const url = await this.urlsService.findByShortCode(shortUrl);
-    if (!url) {
+  async redirect(@Param('shortCode') shortCode: string) {
+    const urlData = await this.urlsService.findByShortCode(shortCode);
+    if (!urlData) {
       throw new NotFoundException('URL not found');
     }
 
     if (
-      (url.expiresAt && url.expiresAt < new Date()) ||
+      (urlData.expiresAt && urlData.expiresAt < new Date()) ||
       // admin can update the url to be inactive
-      !url.isActive ||
+      !urlData.isActive ||
       // if the url is soft deleted
-      (url.deletedAt && url.deletedAt < new Date())
+      (urlData.deletedAt && urlData.deletedAt < new Date())
     ) {
       throw new GoneException('URL has expired');
     }
     // update hit counter
-    void this.urlsService.updateHitCounter(url.id);
+    void this.urlsService.updateHitCounter(urlData.id);
 
-    return { url: url.originalUrl };
+    return { url: urlData.originalUrl };
   }
 }
